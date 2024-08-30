@@ -2,7 +2,7 @@ from openai import OpenAI
 import numpy as np
 import string
 import json
-from typing import Dict, Any
+from typing import Dict, Any, List
 import os
 import pickle
 
@@ -13,7 +13,6 @@ ANSWER_FORMAT = {
     "letter-only": "Only give the corresponding letter between the tags <ans> and </ans>. For example, if you think the answer is 'A', write <ans>A</ans>.",
     "step-by-step": "Lay out your reasoning and think step by step. Finally give the answer between the tags <ans> and </ans>. For example, if you think the answer is 'A', write <ans>A</ans>.",
 }
-
 PROMPT_TEMPLATE = """
 In the following murder mystery:
 
@@ -25,9 +24,17 @@ Which of the following suspects is the culprit:
 
 {answer}
 """
+NUM_CHUNKS = 10
 
 
 clientoa = OpenAI()
+
+
+def gen_end_points(text_length: int, num_chunks: int = NUM_CHUNKS) -> List[int]:
+    base_chunk_size = text_length // num_chunks
+    end_points = np.arange(base_chunk_size, text_length, base_chunk_size)
+    end_points[-1] = text_length
+    return end_points.astype(int)
 
 
 def load_json(fn: str) -> Dict[str, Any]:
@@ -43,20 +50,14 @@ def load_json(fn: str) -> Dict[str, Any]:
         raise
 
 
-def gen_prompt(fn: str) -> str:
-    data = load_json(fn)
-    mystery = data["mystery"]
-    reveal_index = data["reveal_index"]
-    suspects = data["suspects"]
-    s = " ".join([f"{CHOICES[i]} {suspect}" for i,
-                 suspect in enumerate(suspects)])
-    p = PROMPT_TEMPLATE.format(mystery=mystery[:reveal_index],
+def gen_prompt(mystery: str, s: str) -> str:
+    p = PROMPT_TEMPLATE.format(mystery=mystery,
                                suspects=s,
                                answer=ANSWER_FORMAT["letter-only"])
     return p
 
 
-def get_completition(prompt):
+def get_completition(prompt: str) -> Any:
     completion = clientoa.chat.completions.create(
         model="gpt-4o",
         messages=[
@@ -78,12 +79,21 @@ def eval() -> None:
     for m in os.listdir('data/mysteries'):
         print(f"evaluating {m}:")
         if m.endswith('.json'):
-            print(f"--Generating prompt")
-            prompt = gen_prompt(f'data/mysteries/{m}')
-            print(f"--Getting completition")
-            completion = get_completition(prompt)
+            print(f"--Generating prompts")
+            data = load_json(f'data/mysteries/{m}')
+            mystery = data["mystery"]
+            reveal_index = data["reveal_index"]
+            suspects = data["suspects"]
+            s = " ".join([f"{CHOICES[i]} {suspect}" for i,
+                          suspect in enumerate(suspects)])
+            eps = gen_end_points(reveal_index)
+            completions = []
+            for i, e in enumerate(eps):
+                prompt = gen_prompt(mystery[:e], s)
+                print(f"--Getting completition {i+1}/{NUM_CHUNKS}")
+                completions.append(get_completition(prompt))
             # save the completion to a file in data/evaluations
-            print(f"--Saving completition")
+            print(f"--Saving all completitions")
             with open(f'data/evaluations/{m.replace(".json", "")}.pickle', 'wb') as f:
-                pickle.dump(completion, f)
-            # print(f"Completion:\n{completion}")
+                pickle.dump(completions, f)
+
