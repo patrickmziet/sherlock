@@ -3,7 +3,7 @@ Eval that tests LLMs ability to determine the culprit in murder mysteries.
 
 # TODO
 - [X] Make enter story function
-- [ ] Test openai model
+- [X] Test openai model
 - [ ] Make plotting code
 - [ ] Add option to "Think step by step..."
 - [ ] Add other models
