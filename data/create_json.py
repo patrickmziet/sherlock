@@ -1,16 +1,7 @@
 import json
 from typing import List
 import os
-
-
-# Variables for contributor to edit
-TITLE = "INSERT TITLE HERE"
-MYSTERY = """
-INSERT MYSTERY HERE
-"""
-SUSPECTS = ["Suspect 1", "Suspect 2", "Suspect 3", "Suspect 4", "..."]
-CULPRIT = "Culprit"
-REVEAL_INDEX = 0
+from enter_details import TITLE, MYSTERY, SUSPECTS, CULPRIT, REVEAL_INDEX
 
 
 def create_mystery_json(
