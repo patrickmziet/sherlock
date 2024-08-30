@@ -5,4 +5,6 @@ Eval that tests LLMs ability to determine the culprit in murder mysteries.
 - [X] Make enter story function
 - [ ] Test openai model
 - [ ] Make plotting code
+- [ ] Add option to "Think step by step..."
 - [ ] Add other models
+- [ ] Write deserializers for output from LLMs (look on developer forums)
