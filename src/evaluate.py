@@ -27,10 +27,7 @@ Which of the following suspects is the culprit:
 
 {answer}
 """
-NUM_CHUNKS = 3
-
-
-# clientoa = OpenAI()
+NUM_CHUNKS = 20
 
 
 def gen_end_points(text_length: int, num_chunks: int = NUM_CHUNKS) -> List[int]:
@@ -60,20 +57,6 @@ def gen_prompt(mystery: str, suspect_mcq: str) -> str:
     return p
 
 
-# def get_completition(prompt: str) -> Any:
-#     completion = clientoa.chat.completions.create(
-#         model="gpt-4o",
-#         messages=[
-#             {"role": "user", "content": prompt}
-#         ],
-#         logprobs=True,
-#         top_logprobs=20,
-#         max_tokens=1,
-#         temperature=0,
-#     )
-#     return completion
-
-
 def eval() -> None:
     os.makedirs('data/evaluations', exist_ok=True)
     all_models = ModelFactory.list_all_models()
@@ -96,8 +79,10 @@ def eval() -> None:
                 with open(fn_e, 'rb') as f:
                     evaluation = pickle.load(f)
                 completions = evaluation["completions"]
-                done_eval = completions.keys()
+                done_eval = list(completions.keys())
+                print(f"--Already evaluated models: {done_eval}")
                 to_eval = [mod for mod in all_models if mod not in done_eval]
+                print(f"--Models to evaluate: {to_eval}")
             prompts = [gen_prompt(mystery[:e], smcq) for e in eps]
             completions.update({mod: [] for mod in to_eval})
             for mod in to_eval:
