@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Any
 from openai import OpenAI
+
 
 class Model(ABC):
     def __init__(self, model_name):
@@ -14,20 +16,22 @@ class Model(ABC):
             "model_name": self.model_name
         }
 
+    def __call__(self):
+        return f"{self.model_name}"
+
 
 class GPT4o(Model):
     def __init__(self):
         super().__init__("gpt-4o")
+        self.client = OpenAI()
+        print(f"Established connection with {self.model_name}")
 
     def make_call(self, prompt, **kwargs):
-        print(f"Established connection with {self.model_name}")
-        client = OpenAI()
-        print(f"Calling {self.model_name} with prompt: {prompt}")
-        response = client.chat.completions.create(
+        response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[
                 {"role": "user", "content": prompt}
-            ],  
+            ],
             logprobs=True,
             top_logprobs=20,
             max_tokens=1,
