@@ -1,4 +1,5 @@
 import os
+import re
 import string
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,7 +67,6 @@ def plot_topprobs(completions, data, model_name):
         for i, v in enumerate(probabilities):
             ax.text(v, i, f'{v:.4f}', va='center')
 
-        # Change background color of ylabel for the true culprit
         culprit_index = tokens.index(culprit)
         ylabels = ax.get_yticklabels()
         for i, label in enumerate(ylabels):
@@ -74,7 +74,7 @@ def plot_topprobs(completions, data, model_name):
                 label.set_bbox(dict(facecolor='lightgreen',
                                edgecolor='none', alpha=0.5))
 
-        ax.set_xlim(0, 1)  # Set fixed x-axis limits
+        ax.set_xlim(0, 1)  
 
     anim = animation.FuncAnimation(fig, animate, frames=len(
         completions), repeat=False, interval=1000)
@@ -86,3 +86,51 @@ def plot_topprobs(completions, data, model_name):
     filename = os.path.join(fp, f"{base_filename}{extension}")
     anim.save(filename, writer='ffmpeg', fps=1)
     plt.close(fig)  # Close the figure to free up memory
+
+
+def plot_selected_suspects(completions, data, model_name):
+    suspects = data['suspects']
+    culprit = data['culprit']
+
+    # Directly get the selected suspect for each chunk
+    selected_suspects = [re.sub(
+        r'[^A-Z]', '', completion.choices[0].message.content) for completion in completions]
+    letters = list(string.ascii_lowercase[:len(suspects)].upper())
+    sus = {letters[i]: suspect for i, suspect in enumerate(suspects)}
+    selected_suspects = [sus.get(suspect) for suspect in selected_suspects]
+    # Create the plot
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Plot dots for selected suspects
+    for i, suspect in enumerate(selected_suspects):
+        if suspect in suspects:  # Ensure the suspect is in our list
+            y_pos = suspects.index(suspect)
+            ax.scatter(i+1, y_pos, color='blue', s=100)
+
+    # Highlight the true culprit
+    culprit_index = suspects.index(culprit)
+    ax.axhline(y=culprit_index, color='green', linestyle='--', alpha=0.5)
+
+    # Set up the axes
+    ax.set_yticks(range(len(suspects)))
+    ax.set_yticklabels(suspects)
+    ax.set_xticks(range(1, len(completions) + 1))
+    ax.set_xlabel('Chunk Number')
+    ax.set_ylabel('Suspects')
+    ax.set_title(f'Selected Suspect per Chunk - {model_name}')
+
+    # Adjust layout and display grid
+    plt.tight_layout()
+    ax.grid(True, which='both', linestyle=':', alpha=0.5)
+
+    # Save the plot
+    tl = data["title"].lower().replace(" ", "_")
+    fp = os.path.join(VIS_DIR, f"{tl}")
+    os.makedirs(fp, exist_ok=True)
+    base_filename = f"{model_name}_selected_suspects"
+    extension = '.png'
+    filename = os.path.join(fp, f"{base_filename}{extension}")
+    plt.savefig(filename)
+    plt.close(fig)  # Close the figure to free up memory
+
+    print(f"Plot saved as '{filename}'")
