@@ -2,9 +2,8 @@ from abc import ABC, abstractmethod
 from openai import OpenAI
 
 class Model(ABC):
-    def __init__(self, model_name, api_key=None):
+    def __init__(self, model_name):
         self.model_name = model_name
-        self.api_key = api_key
 
     @abstractmethod
     def make_call(self, prompt, **kwargs):
@@ -17,8 +16,8 @@ class Model(ABC):
 
 
 class GPT4o(Model):
-    def __init__(self, api_key):
-        super().__init__("gpt-4o", api_key=api_key)
+    def __init__(self):
+        super().__init__("gpt-4o")
 
     def make_call(self, prompt, **kwargs):
         print(f"Established connection with {self.model_name}")
@@ -44,9 +43,9 @@ class ModelFactory:
     }
 
     @staticmethod
-    def get_model(model_type, api_key=None):
+    def get_model(model_type):
         if model_type in ModelFactory.model_classes:
-            return ModelFactory.model_classes[model_type](api_key=api_key)
+            return ModelFactory.model_classes[model_type]()
         else:
             raise ValueError("Model type not supported")
 
