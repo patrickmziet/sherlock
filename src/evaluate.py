@@ -10,7 +10,9 @@ import pickle
 CHOICES = list(string.ascii_lowercase[:20].upper())
 CHOICES = [f"({c})" for c in CHOICES]
 ANSWER_FORMAT = {
-    "letter-only": "Only give the corresponding letter between the tags <ans> and </ans>. For example, if you think the answer is 'A', write <ans>A</ans>.",
+    # "letter-only": "Only give the letter correspon. For example, if you think the answer is 'A', write <ans>A</ans>.",
+    "letter-only": "Only give the letter corresponding letter. For example, if you think the answer is 'A', write A.",
+    # "letter-only": "Only give the letter corresponding to the culprit. The letter corresponding to the culprit is ",
     "step-by-step": "Lay out your reasoning and think step by step. Finally give the answer between the tags <ans> and </ans>. For example, if you think the answer is 'A', write <ans>A</ans>.",
 }
 PROMPT_TEMPLATE = """
@@ -64,18 +66,15 @@ def get_completition(prompt: str) -> Any:
             {"role": "user", "content": prompt}
         ],
         logprobs=True,
-        top_logprobs=20
+        top_logprobs=20,
+        max_tokens=1,
+        temperature=0,
     )
     return completion
 
 
 def eval() -> None:
-    # TODO: make a table of of story x model to see if the it has completed the story. Keep in data folder
-
-    # Create the directory if it doesn't exist
     os.makedirs('data/evaluations', exist_ok=True)
-
-    # loop through all the files in the data/mysteries folder and get the completions
     for m in os.listdir('data/mysteries'):
         print(f"evaluating {m}:")
         if m.endswith('.json'):
@@ -95,5 +94,8 @@ def eval() -> None:
             # save the completion to a file in data/evaluations
             print(f"--Saving all completitions")
             with open(f'data/evaluations/{m.replace(".json", "")}.pickle', 'wb') as f:
-                pickle.dump(completions, f)
-
+                evaluation = {
+                    "data": data,
+                    "completions": completions
+                }
+                pickle.dump(evaluation, f)
