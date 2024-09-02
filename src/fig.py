@@ -25,7 +25,10 @@ def combine_prob_entries(probs):
     return combined_probs
 
 
-def plot_topprobs(completions, suspects):
+def plot_topprobs(completions, data, model_name):
+    suspects = data['suspects']
+    culprit = data['culprit']
+
     fig, ax = plt.subplots(figsize=(12, 10))
 
     def animate(j):
@@ -50,26 +53,36 @@ def plot_topprobs(completions, suspects):
         y_pos = np.arange(len(normalized_probs))
         tokens = list(normalized_probs.keys())
         probabilities = list(normalized_probs.values())
+        colors = ['green' if suspect ==
+                  culprit else 'blue' for suspect in tokens]
 
-        ax.barh(y_pos, probabilities)
+        ax.barh(y_pos, probabilities, color=colors)
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(tokens)
+        ax.set_yticklabels(tokens, fontsize=8)
         ax.invert_yaxis()
         ax.set_xlabel('Normalized Probability')
         ax.set_title(
             f'Normalized Probabilities of Tokens (Completion {j + 1})')
-
         for i, v in enumerate(probabilities):
             ax.text(v, i, f'{v:.4f}', va='center')
+
+        # Change background color of ylabel for the true culprit
+        culprit_index = tokens.index(culprit)
+        ylabels = ax.get_yticklabels()
+        for i, label in enumerate(ylabels):
+            if i == culprit_index:
+                label.set_bbox(dict(facecolor='lightgreen',
+                               edgecolor='none', alpha=0.5))
 
         ax.set_xlim(0, 1)  # Set fixed x-axis limits
 
     anim = animation.FuncAnimation(fig, animate, frames=len(
-        completions), repeat=False, interval=2000)
-    os.makedirs(VIS_DIR, exist_ok=True)
-    base_filename = 'topprobs_animation'
+        completions), repeat=False, interval=1000)
+    tl = data["title"].lower().replace(" ", "_")
+    fp = os.path.join(VIS_DIR, f"{tl}")
+    os.makedirs(fp, exist_ok=True)
+    base_filename = f"{model_name}_topprobs"
     extension = '.mp4'
-    filename = os.path.join(VIS_DIR, f"{base_filename}{extension}")
+    filename = os.path.join(fp, f"{base_filename}{extension}")
     anim.save(filename, writer='ffmpeg', fps=1)
     plt.close(fig)  # Close the figure to free up memory
-    print("Animation saved as 'topprobs_animation.mp4'")
