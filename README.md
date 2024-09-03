@@ -1,6 +1,6 @@
 # Sherlock eval
 
-Eval that tests LLMs ability to determine the culprit in Sherlock Holmes murder mysteries. 
+Inspired by an [episode of the Dwarkesh Podcast](https://x.com/dwarkesh_sp/status/1825931761118794102), this is an eval that tests LLMs ability to determine the culprit in Sherlock Holmes murder mysteries. 
 
 ## Contributing a mystery
 
