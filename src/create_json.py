@@ -1,7 +1,8 @@
 import json
 from typing import List
 import os
-# from enter_details import TITLE, DIFFICULTY, MYSTERY, SUSPECTS, CULPRIT, REVEAL_INDEX
+
+from src.config import MYS_DIR
 
 
 def create_mystery_json(
@@ -54,7 +55,7 @@ def create_mystery_json(
     json_string: str = json.dumps(mystery_dict, indent=2)
 
     # Create directory for the difficulty level if it doesn't exist
-    difficulty_dir = f"data/mysteries/{difficulty}"
+    difficulty_dir = f"{MYS_DIR}/{difficulty}"
     os.makedirs(difficulty_dir, exist_ok=True)
 
     # Generate base filename
@@ -67,7 +68,8 @@ def create_mystery_json(
 
     # If similar files exist, warn the user
     if similar_files:
-        print(f"Warning: The following files in the {difficulty} directory have similar names and should be checked:")
+        print(
+            f"Warning: The following files in the {difficulty} directory have similar names and should be checked:")
         for file in similar_files:
             print(f"- {file}")
 
@@ -81,4 +83,5 @@ def create_mystery_json(
     with open(filename, 'w') as f:
         f.write(json_string)
 
-    print(f"Mystery '{title}' has been saved successfully in the {difficulty} directory.")
+    print(
+        f"Mystery '{title}' has been saved successfully in the {difficulty} directory.")

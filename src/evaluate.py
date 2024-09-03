@@ -8,9 +8,7 @@ from tqdm import tqdm
 
 from src.models import ModelFactory
 from src.serializers import LLMAPISerializer
-
-EVAL_DIR = "data/evaluations"
-MYS_DIR = "data/mysteries"
+from src.config import EVAL_DIR, MYS_DIR
 
 MAX_CHOICES = 20
 CHOICES = list(string.ascii_lowercase[:MAX_CHOICES].upper())
@@ -28,7 +26,6 @@ Answer: B
 """
 ANSWER_FORMAT = {
     "letter-only": "Only give the letter corresponding letter. For example, if you think the answer is 'A', write A. Answer: ",
-    # "letter-only": "Only give the letter corresponding to the culprit. The letter corresponding to the culprit is ",
     "step-by-step": "Lay out your reasoning and think step by step. Finally give the answer between the tags <ans> and </ans>. For example, if you think the answer is 'A', write <ans>A</ans>.",
 }
 PROMPT_TEMPLATE = """

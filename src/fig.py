@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-VIS_DIR = 'data/visualizations'
+from src.config import VIS_DIR
 
 
 def combine_prob_entries(probs):
