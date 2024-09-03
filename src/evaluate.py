@@ -9,6 +9,9 @@ from tqdm import tqdm
 from src.models import ModelFactory
 from src.serializers import LLMAPISerializer
 
+EVAL_DIR = "data/evaluations"
+MYS_DIR = "data/mysteries"
+
 MAX_CHOICES = 20
 CHOICES = list(string.ascii_lowercase[:MAX_CHOICES].upper())
 CHOICES = [f"({c})" for c in CHOICES]
@@ -41,7 +44,7 @@ Which of the following suspects is the culprit:
 
 {answer} 
 """
-NUM_CHUNKS = 3
+NUM_CHUNKS = 10
 
 
 def gen_end_points(text_length: int, num_chunks: int = NUM_CHUNKS) -> List[int]:
@@ -73,43 +76,46 @@ def gen_prompt(mystery: str, suspect_mcq: str) -> str:
 
 
 def eval() -> None:
-    os.makedirs('data/evaluations', exist_ok=True)
     all_models = ModelFactory.list_all_models()
     print(f"Available models: {all_models}")
-    for mys in os.listdir('data/mysteries'):
-        print(f"Evaluating mystery: {mys}:")
-        if mys.endswith('.json'):
-            print(f"--Generating prompts")
-            data = load_json(f'data/mysteries/{mys}')
-            mystery = data["mystery"]
-            reveal_index = data["reveal_index"]
-            suspects = data["suspects"]
-            smcq = " ".join([f"{CHOICES[i]} {suspect}" for i,
-                             suspect in enumerate(suspects)])
-            eps = gen_end_points(reveal_index)
-            fn_e = f'data/evaluations/{mys.replace(".json", "")}.pickle'
-            to_eval = all_models
-            completions = {}
-            if os.path.exists(fn_e):
-                with open(fn_e, 'rb') as f:
-                    evaluation = pickle.load(f)
-                completions = evaluation["completions"]
-                done_eval = list(completions.keys())
-                print(f"--Already evaluated models: {done_eval}")
-                to_eval = [mod for mod in all_models if mod not in done_eval]
-                print(f"--Models to evaluate: {to_eval}")
-            prompts = [gen_prompt(mystery[:e], smcq) for e in eps]
-            completions.update({mod: [] for mod in to_eval})
-            for mod in to_eval:
-                model = ModelFactory.get_model(mod)
-                print(f"--Evaluating model: {mod}")
-                for p in tqdm(prompts, desc="Getting completions", unit="chunk"):
-                    completions[mod].append(LLMAPISerializer.to_unified_format(
-                        model.make_call(p), model.api_type))
-            print(f"--Saving all completitions")
-            with open(fn_e, 'wb') as f:
-                evaluation = {
-                    "data": data,
-                    "completions": completions
-                }
-                pickle.dump(evaluation, f)
+    for dif in os.listdir(MYS_DIR):
+        os.makedirs(f'{EVAL_DIR}/{dif}', exist_ok=True)
+        print(f"Evaluating difficulty: {dif}")
+        for mys in os.listdir(f'{MYS_DIR}/{dif}'):
+            print(f"Evaluating mystery: {mys}:")
+            if mys.endswith('.json'):
+                print(f"--Generating prompts")
+                data = load_json(f'{MYS_DIR}/{dif}/{mys}')
+                mystery = data["mystery"]
+                reveal_index = data["reveal_index"]
+                suspects = data["suspects"]
+                smcq = " ".join([f"{CHOICES[i]} {suspect}" for i,
+                                suspect in enumerate(suspects)])
+                eps = gen_end_points(reveal_index)
+                fn_e = f'{EVAL_DIR}/{dif}/{mys.replace(".json", "")}.pickle'
+                to_eval = all_models
+                completions = {}
+                if os.path.exists(fn_e):
+                    with open(fn_e, 'rb') as f:
+                        evaluation = pickle.load(f)
+                    completions = evaluation["completions"]
+                    done_eval = list(completions.keys())
+                    print(f"--Already evaluated models: {done_eval}")
+                    to_eval = [
+                        mod for mod in all_models if mod not in done_eval]
+                    print(f"--Models to evaluate: {to_eval}")
+                prompts = [gen_prompt(mystery[:e], smcq) for e in eps]
+                completions.update({mod: [] for mod in to_eval})
+                for mod in to_eval:
+                    model = ModelFactory.get_model(mod)
+                    print(f"--Evaluating model: {mod}")
+                    for p in tqdm(prompts, desc="Getting completions", unit="chunk"):
+                        completions[mod].append(LLMAPISerializer.to_unified_format(
+                            model.make_call(p), model.api_type))
+                print(f"--Saving all completitions")
+                with open(fn_e, 'wb') as f:
+                    evaluation = {
+                        "data": data,
+                        "completions": completions
+                    }
+                    pickle.dump(evaluation, f)
