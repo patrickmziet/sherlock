@@ -3,10 +3,16 @@ from typing import Any
 from openai import OpenAI
 from anthropic import Anthropic
 
+API_TYPES = {
+    "openai": ["gpt-4o-2024-05-13"],
+    "claude": ["claude-3-5-sonnet-20240620"],
+}
+
 
 class Model(ABC):
-    def __init__(self, model_name):
+    def __init__(self, model_name, api_type):
         self.model_name = model_name
+        self.api_type = api_type
 
     @abstractmethod
     def make_call(self, prompt, **kwargs):
@@ -21,9 +27,9 @@ class Model(ABC):
         return f"{self.model_name}"
 
 
-class GPT4o(Model):
+class GPT4o240513(Model):
     def __init__(self):
-        super().__init__("gpt-4o")
+        super().__init__("gpt-4o-2024-05-13")
         self.client = OpenAI()
         print(f"Established connection with {self.model_name}")
 
@@ -64,7 +70,7 @@ class Claude35Sonnet240620(Model):
 
 class ModelFactory:
     model_classes = {
-        "gpt-4o": GPT4o,
+        "gpt-4o-2024-05-13": GPT4o240513,
         "claude-3-5-sonnet-20240620": Claude35Sonnet240620
     }
 
@@ -78,3 +84,7 @@ class ModelFactory:
     @staticmethod
     def list_all_models():
         return list(ModelFactory.model_classes.keys())
+    
+    @staticmethod
+    def list_models_by_api():
+        return API_TYPES
