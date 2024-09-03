@@ -1,10 +1,11 @@
-from openai import OpenAI
 import numpy as np
 import string
 import json
 from typing import Dict, Any, List
 import os
 import pickle
+from tqdm import tqdm
+
 from src.models import ModelFactory
 
 
@@ -12,7 +13,7 @@ CHOICES = list(string.ascii_lowercase[:20].upper())
 CHOICES = [f"({c})" for c in CHOICES]
 ANSWER_FORMAT = {
     # "letter-only": "Only give the letter correspon. For example, if you think the answer is 'A', write <ans>A</ans>.",
-    "letter-only": "Only give the letter corresponding letter. For example, if you think the answer is 'A', write A.",
+    "letter-only": "Only give the letter corresponding letter. For example, if you think the answer is 'A', write A. Answer: ",
     # "letter-only": "Only give the letter corresponding to the culprit. The letter corresponding to the culprit is ",
     "step-by-step": "Lay out your reasoning and think step by step. Finally give the answer between the tags <ans> and </ans>. For example, if you think the answer is 'A', write <ans>A</ans>.",
 }
@@ -27,7 +28,7 @@ Which of the following suspects is the culprit:
 
 {answer}
 """
-NUM_CHUNKS = 20
+NUM_CHUNKS = 3
 
 
 def gen_end_points(text_length: int, num_chunks: int = NUM_CHUNKS) -> List[int]:
@@ -88,8 +89,7 @@ def eval() -> None:
             for mod in to_eval:
                 model = ModelFactory.get_model(mod)
                 print(f"--Evaluating model: {mod}")
-                for i, p in enumerate(prompts):
-                    print(f"----Getting completition {i+1}/{NUM_CHUNKS}")
+                for p in tqdm(prompts, desc="Getting completions", unit="chunk"):
                     completions[mod].append(model.make_call(p))
             print(f"--Saving all completitions")
             with open(fn_e, 'wb') as f:
