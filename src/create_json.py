@@ -29,7 +29,8 @@ def create_mystery_json(
 
     # Check difficulty is either 'easy', 'medium', or 'hard'
     if difficulty not in ['easy', 'medium', 'hard']:
-        raise ValueError("Difficulty must be either 'easy', 'medium', or 'hard'")
+        raise ValueError(
+            "Difficulty must be either 'easy', 'medium', or 'hard'")
 
     # Check if culprit is in suspects
     if culprit not in suspects:
@@ -52,39 +53,32 @@ def create_mystery_json(
     # Use json.dumps() to properly encode the entire dictionary
     json_string: str = json.dumps(mystery_dict, indent=2)
 
+    # Create directory for the difficulty level if it doesn't exist
+    difficulty_dir = f"data/mysteries/{difficulty}"
+    os.makedirs(difficulty_dir, exist_ok=True)
+
     # Generate base filename
     base_filename = title.lower().replace(' ', '_')
-    filename = f"data/mysteries/{base_filename}.json"
+    filename = f"{difficulty_dir}/{base_filename}.json"
 
     # Check for existing files with similar names
     similar_files = [f for f in os.listdir(
-        "data/mysteries") if f.startswith(base_filename)]
+        difficulty_dir) if f.startswith(base_filename)]
 
     # If similar files exist, warn the user
     if similar_files:
-        print("Warning: The following files have similar names and should be checked:")
+        print(f"Warning: The following files in the {difficulty} directory have similar names and should be checked:")
         for file in similar_files:
             print(f"- {file}")
 
     # Ensure filename is unique
     counter = 1
     while os.path.exists(filename):
-        filename = f"data/mysteries/{base_filename}_{counter}.json"
+        filename = f"{difficulty_dir}/{base_filename}_{counter}.json"
         counter += 1
 
     # Save to file
     with open(filename, 'w') as f:
         f.write(json_string)
 
-    print(f"Mystery '{title}' has been saved successfully.")
-
-
-# if __name__ == "__main__":
-#     try:
-#         create_mystery_json(TITLE, DIFFICULTY, MYSTERY, SUSPECTS, CULPRIT, REVEAL_INDEX)
-#     except (TypeError, ValueError) as e:
-#         print(f"Error: {e}")
-#         print("Please check your input and try again.")
-#     except Exception as e:
-#         print(f"An unexpected error occurred: {e}")
-#         print("Please check your input and try again.")
+    print(f"Mystery '{title}' has been saved successfully in the {difficulty} directory.")
