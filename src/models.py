@@ -84,7 +84,7 @@ class ModelFactory:
     @staticmethod
     def list_all_models():
         return list(ModelFactory.model_classes.keys())
-    
+
     @staticmethod
     def list_models_by_api():
         return API_TYPES
