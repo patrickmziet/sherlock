@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 from openai import OpenAI
+from anthropic import Anthropic
 
 
 class Model(ABC):
@@ -41,9 +42,30 @@ class GPT4o(Model):
         return response
 
 
+class Claude35Sonnet240620(Model):
+    def __init__(self):
+        super().__init__("claude-3-5-sonnet-20240620")
+        self.client = Anthropic()
+        print(f"Established connection with {self.model_name}")
+
+    def make_call(self, prompt, **kwargs):
+        response = self.client.messages.create(
+            model="claude-3-5-sonnet-20240620",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1,
+            temperature=0,
+            **kwargs
+        )
+
+        return response
+
+
 class ModelFactory:
     model_classes = {
-        "gpt-4o": GPT4o
+        "gpt-4o": GPT4o,
+        "claude-3-5-sonnet-20240620": Claude35Sonnet240620
     }
 
     @staticmethod
