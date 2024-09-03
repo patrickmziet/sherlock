@@ -7,9 +7,10 @@ import pickle
 from tqdm import tqdm
 
 from src.models import ModelFactory
+from src.serializers import LLMAPISerializer
 
-
-CHOICES = list(string.ascii_lowercase[:20].upper())
+MAX_CHOICES = 20
+CHOICES = list(string.ascii_lowercase[:MAX_CHOICES].upper())
 CHOICES = [f"({c})" for c in CHOICES]
 ANSWER_FORMAT = {
     # "letter-only": "Only give the letter correspon. For example, if you think the answer is 'A', write <ans>A</ans>.",
@@ -90,7 +91,8 @@ def eval() -> None:
                 model = ModelFactory.get_model(mod)
                 print(f"--Evaluating model: {mod}")
                 for p in tqdm(prompts, desc="Getting completions", unit="chunk"):
-                    completions[mod].append(model.make_call(p))
+                    completions[mod].append(LLMAPISerializer.to_unified_format(
+                        model.make_call(p), model.api_type))
             print(f"--Saving all completitions")
             with open(fn_e, 'wb') as f:
                 evaluation = {
