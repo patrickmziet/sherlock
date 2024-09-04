@@ -22,4 +22,5 @@ Have a look at the existing stories in [data/mysteries](https://github.com/patri
 - [ ] Make at least 20 stories in each difficulty category
 - [ ] Add other models
 - [ ] Update README/repo landing page. Must have key figs, tables summaries etc
+- [ ] Add stream/demo
 - [ ] Make .tex/.pdf report
