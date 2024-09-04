@@ -21,4 +21,5 @@ Have a look at the existing stories in [data/mysteries](https://github.com/patri
 - [ ] Improve API request answer format. Give an example. Add option to "Think step by step..."
 - [ ] Make at least 20 stories in each difficulty category
 - [ ] Add other models
+- [ ] Update README/repo landing page. Must have key figs, tables summaries etc
 - [ ] Make .tex/.pdf report
