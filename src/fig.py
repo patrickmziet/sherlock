@@ -8,7 +8,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-from src.config import VIS_DIR, EVAL_DIR
+from src.config import VIS_DIR, EVAL_DIR, LETTERS, POSSIBLE_RESPONSES
 
 
 def combine_prob_entries(probs):
@@ -185,9 +185,11 @@ def make_confusion():
     model_names = set()
 
     for difficulty in os.listdir(EVAL_DIR):
+        print(f"Processing difficulty: {difficulty}")
         difficulty_path = os.path.join(EVAL_DIR, difficulty)
         if os.path.isdir(difficulty_path):
             for filename in os.listdir(difficulty_path):
+                print(f"-Processing file: {filename}")
                 if filename.endswith('.pickle'):
                     filepath = os.path.join(difficulty_path, filename)
                     with open(filepath, 'rb') as f:
@@ -195,13 +197,24 @@ def make_confusion():
                     
                     story_name = filename.replace('.pickle', '')
                     culprit = data['data']['culprit']
-                    
+                    suspects = data['data']['suspects']
+                    culprit_index = suspects.index(culprit)
                     for model, completions in data['completions'].items():
+                        print(f"--Processing model: {model}")
                         model_names.add(model)
                         # Assuming the last completion is the final answer
-                        final_answer = completions[-1]['content'][0]['text'].strip().upper()
-                        correct = int(final_answer == culprit[0].upper())
+                        final_answer = completions[-1]['content'][0]['text']
+                        print(f"---Final answer: {final_answer}")
                         
+                        if final_answer in POSSIBLE_RESPONSES or final_answer in LETTERS:
+                            if final_answer in POSSIBLE_RESPONSES:
+                                final_answer = re.sub(r'[^A-Z]', '', final_answer)
+                            final_answer_index = LETTERS.index(final_answer)
+                            print(f"---Final answer index: {final_answer_index}")
+                            correct = int(final_answer_index == culprit_index)
+                        else:
+                            print(f"---Final answer not in possible responses: {final_answer}")
+                            correct = 0
                         results[story_name][model] = correct
                         difficulty_results[difficulty][model].append(correct)
 
