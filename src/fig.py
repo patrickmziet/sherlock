@@ -26,20 +26,49 @@ def combine_prob_entries(probs):
     return combined_probs
 
 
-def plot_topprobs(completions, data, model_name):
+def highlight_culprit(ax, suspects, culprit):
+    culprit_index = suspects.index(culprit)
+    ylabels = ax.get_yticklabels()
+    for i, label in enumerate(ylabels):
+        if i == culprit_index:
+            label.set_bbox(dict(facecolor='lightgreen', edgecolor='none', alpha=0.5))
+            
+def make_viz_dir(data):
+    tl = data["title"].lower().replace(" ", "_")
+    dif = data["difficulty"]
+    return os.path.join(f"{VIS_DIR}/{dif}", f"{tl}")
+
+
+def plot_topprobs(completions, data, model_name, force_rerun=False):
+    fp = make_viz_dir(data)
+    os.makedirs(fp, exist_ok=True)
+    base_filename = f"{model_name}_topprobs"
+    extension = '.mp4'
+    filename = os.path.join(fp, f"{base_filename}{extension}")
+
+    # Check if file already exists and force_rerun is False
+    if os.path.exists(filename) and not force_rerun:
+        print(f"File '{filename}' already exists. Skipping plot generation.")
+        return
+
     suspects = data['suspects']
     culprit = data['culprit']
 
     fig, ax = plt.subplots(figsize=(12, 10))
 
+    # Check only the first completion for top_logprobs
+    if not completions or completions[0].get('top_logprobs') is None:
+        print(f"No valid top_logprobs data found for model {model_name}")
+        plt.close(fig)  # Close the figure to free up memory
+        return  # Exit the function without saving a file
+
     def animate(j):
         ax.clear()
         completion = completions[j]
         top_logprobs_dict = completion.get('top_logprobs', {})
-
+        
         if not top_logprobs_dict:
-            print(f"No top_logprobs data for completion {j}")
-            return
+            return  # Skip this frame if top_logprobs is empty
 
         probs = {k: np.exp(v) for k, v in top_logprobs_dict.items()}
         probs = combine_prob_entries(probs)
@@ -68,28 +97,29 @@ def plot_topprobs(completions, data, model_name):
         for i, v in enumerate(probabilities):
             ax.text(v, i, f'{v:.4f}', va='center')
 
-        culprit_index = tokens.index(culprit)
-        ylabels = ax.get_yticklabels()
-        for i, label in enumerate(ylabels):
-            if i == culprit_index:
-                label.set_bbox(dict(facecolor='lightgreen',
-                               edgecolor='none', alpha=0.5))
-
+        highlight_culprit(ax, tokens, culprit)
         ax.set_xlim(0, 1)
 
     anim = animation.FuncAnimation(fig, animate, frames=len(
         completions), repeat=False, interval=1000)
-    tl = data["title"].lower().replace(" ", "_")
-    fp = os.path.join(VIS_DIR, f"{tl}")
-    os.makedirs(fp, exist_ok=True)
-    base_filename = f"{model_name}_topprobs"
-    extension = '.mp4'
-    filename = os.path.join(fp, f"{base_filename}{extension}")
+    
     anim.save(filename, writer='ffmpeg', fps=1)
     plt.close(fig)  # Close the figure to free up memory
+    print(f"Plot saved as '{filename}'")
 
 
-def plot_selected_suspects(completions, data, model_name):
+def plot_selected_suspects(completions, data, model_name, force_rerun=False):
+    fp = make_viz_dir(data)
+    os.makedirs(fp, exist_ok=True)
+    base_filename = f"{model_name}_selected_suspects"
+    extension = '.png'
+    filename = os.path.join(fp, f"{base_filename}{extension}")
+
+    # Check if file already exists and force_rerun is False
+    if os.path.exists(filename) and not force_rerun:
+        print(f"File '{filename}' already exists. Skipping plot generation.")
+        return
+
     suspects = data['suspects']
     culprit = data['culprit']
 
@@ -129,17 +159,14 @@ def plot_selected_suspects(completions, data, model_name):
     ax.set_ylabel('Suspects')
     ax.set_title(f'Selected Suspect per Chunk - {model_name}')
 
+    # Highlight the culprit
+    highlight_culprit(ax, suspects, culprit)
+
     # Adjust layout and display grid
     plt.tight_layout()
     ax.grid(True, which='both', linestyle=':', alpha=0.5)
 
     # Save the plot
-    tl = data["title"].lower().replace(" ", "_")
-    fp = os.path.join(VIS_DIR, f"{tl}")
-    os.makedirs(fp, exist_ok=True)
-    base_filename = f"{model_name}_selected_suspects"
-    extension = '.png'
-    filename = os.path.join(fp, f"{base_filename}{extension}")
     plt.savefig(filename)
     plt.close(fig)  # Close the figure to free up memory
 
