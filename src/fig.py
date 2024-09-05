@@ -2,10 +2,13 @@ import os
 import re
 import string
 import numpy as np
+import pandas as pd
+import pickle
+from collections import defaultdict
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-from src.config import VIS_DIR
+from src.config import VIS_DIR, EVAL_DIR
 
 
 def combine_prob_entries(probs):
@@ -171,3 +174,49 @@ def plot_selected_suspects(completions, data, model_name, force_rerun=False):
     plt.close(fig)  # Close the figure to free up memory
 
     print(f"Plot saved as '{filename}'")
+
+
+def make_confusion():
+    """
+    Creates confusion matrix data from evaluation pickle files.
+    """
+    results = defaultdict(lambda: defaultdict(int))
+    difficulty_results = defaultdict(lambda: defaultdict(list))
+    model_names = set()
+
+    for difficulty in os.listdir(EVAL_DIR):
+        difficulty_path = os.path.join(EVAL_DIR, difficulty)
+        if os.path.isdir(difficulty_path):
+            for filename in os.listdir(difficulty_path):
+                if filename.endswith('.pickle'):
+                    filepath = os.path.join(difficulty_path, filename)
+                    with open(filepath, 'rb') as f:
+                        data = pickle.load(f)
+                    
+                    story_name = filename.replace('.pickle', '')
+                    culprit = data['data']['culprit']
+                    
+                    for model, completions in data['completions'].items():
+                        model_names.add(model)
+                        # Assuming the last completion is the final answer
+                        final_answer = completions[-1]['content'][0]['text'].strip().upper()
+                        correct = int(final_answer == culprit[0].upper())
+                        
+                        results[story_name][model] = correct
+                        difficulty_results[difficulty][model].append(correct)
+
+    # Create detailed DataFrame
+    df_detailed = pd.DataFrame(results).T.fillna(0)
+
+    # Create difficulty-based DataFrame
+    df_difficulty = {}
+    for diff, model_results in difficulty_results.items():
+        df_difficulty[diff] = {model: sum(results)/len(results) for model, results in model_results.items()}
+    df_difficulty = pd.DataFrame(df_difficulty).T.fillna(0)
+
+    return df_detailed, df_difficulty
+
+
+
+def plot_perf():
+    pass

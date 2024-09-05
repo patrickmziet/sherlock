@@ -17,7 +17,7 @@ Have a look at the existing stories in [data/mysteries](https://github.com/patri
 - [X] Add claude API
 - [X] Write serializers
 - [X] Fix stream animation if there are no logprobs, and add green box to other plot ylabel.
-- [ ] Add other plot/table functions: Performance (%) vs model, add random classifier, function to print TeX table, calibration plot, "Stream score" where early correct guesses are rewarded more (first prompt claude to see if anything similar exists) 
+- [ ] Add other plot/table functions: Performance (%) vs model, add random classifier, function to print TeX table, calibration plot, "Stream score" where early correct guesses are rewarded more (first prompt claude to see if anything similar exists). But must also punish if it veers off later on. It could be right in the middle of the story but then fail at a later stage. 
 - [ ] Improve API request answer format. Give an example. Add option to "Think step by step..."
 - [ ] Make at least 20 stories in each difficulty category
 - [ ] Add other models
