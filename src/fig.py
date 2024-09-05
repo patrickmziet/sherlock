@@ -1,5 +1,4 @@
 import os
-import re
 import string
 import numpy as np
 import pandas as pd
@@ -9,24 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 from src.config import VIS_DIR, EVAL_DIR, LETTERS, POSSIBLE_RESPONSES
-
-
-def combine_prob_entries(probs):
-    combined_probs = {}
-    for key, value in probs.items():
-        if key.startswith('(') and len(key) > 1:
-            clean_key = key[1:]  # Remove the leading parenthesis
-            if clean_key in combined_probs:
-                combined_probs[clean_key] += value
-            else:
-                combined_probs[clean_key] = value
-        else:
-            if key in combined_probs:
-                combined_probs[key] += value
-            else:
-                combined_probs[key] = value
-
-    return combined_probs
+from src.data import combine_prob_entries, token_to_suspect
 
 
 def highlight_culprit(ax, suspects, culprit):
@@ -125,22 +107,9 @@ def plot_selected_suspects(completions, data, model_name, force_rerun=False):
 
     suspects = data['suspects']
     culprit = data['culprit']
-
-    # Extract the selected suspect from the content of each completion
     selected_suspects = []
     for completion in completions:
-        content = completion.get('content', [])
-        if content:
-            text = content[0].get('text', '')
-            selected_suspect = re.sub(r'[^A-Z]', '', text)
-            selected_suspects.append(selected_suspect)
-        else:
-            selected_suspects.append('')
-
-    letters = list(string.ascii_lowercase[:len(suspects)].upper())
-    sus = {letters[i]: suspect for i, suspect in enumerate(suspects)}
-    selected_suspects = [sus.get(suspect) for suspect in selected_suspects]
-
+        selected_suspects.append(token_to_suspect(completion, suspects))
     # Create the plot
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -185,42 +154,25 @@ def make_confusion():
     model_names = set()
 
     for difficulty in os.listdir(EVAL_DIR):
-        print(f"Processing difficulty: {difficulty}")
         difficulty_path = os.path.join(EVAL_DIR, difficulty)
         if os.path.isdir(difficulty_path):
             for filename in os.listdir(difficulty_path):
-                print(f"-Processing file: {filename}")
                 if filename.endswith('.pickle'):
                     filepath = os.path.join(difficulty_path, filename)
                     with open(filepath, 'rb') as f:
                         data = pickle.load(f)
-                    
                     story_name = filename.replace('.pickle', '')
                     culprit = data['data']['culprit']
                     suspects = data['data']['suspects']
-                    culprit_index = suspects.index(culprit)
                     for model, completions in data['completions'].items():
-                        print(f"--Processing model: {model}")
                         model_names.add(model)
-                        # Assuming the last completion is the final answer
-                        final_answer = completions[-1]['content'][0]['text']
-                        print(f"---Final answer: {final_answer}")
-                        
-                        if final_answer in POSSIBLE_RESPONSES or final_answer in LETTERS:
-                            if final_answer in POSSIBLE_RESPONSES:
-                                final_answer = re.sub(r'[^A-Z]', '', final_answer)
-                            final_answer_index = LETTERS.index(final_answer)
-                            print(f"---Final answer index: {final_answer_index}")
-                            correct = int(final_answer_index == culprit_index)
-                        else:
-                            print(f"---Final answer not in possible responses: {final_answer}")
-                            correct = 0
+                        selected_suspect = token_to_suspect(completions[-1], suspects)
+                        correct = int(selected_suspect == culprit)
                         results[story_name][model] = correct
                         difficulty_results[difficulty][model].append(correct)
 
     # Create detailed DataFrame
     df_detailed = pd.DataFrame(results).T.fillna(0)
-
     # Create difficulty-based DataFrame
     df_difficulty = {}
     for diff, model_results in difficulty_results.items():
