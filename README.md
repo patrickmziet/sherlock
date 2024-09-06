@@ -2,14 +2,13 @@
 
 Inspired by an [episode of the Dwarkesh Podcast](https://x.com/dwarkesh_sp/status/1825931761118794102), this is an eval that tests LLMs ability to determine the culprit in Sherlock Holmes murder mysteries. 
 
+![Model Performance](data/visualizations/model_performance.png)
+
 ## Contributing a mystery
 
 The aim is to have mysteries contributed from other people, please fork the repo, make a new story and submit it as a PR. 
 
 Follow the instructions in the [make_story.ipynb](https://github.com/patrickmziet/sherlock/blob/main/make_story.ipynb) notebook. 
-
-![Model Performance](data/visualizations/model_performance.png)
-
 
 Have a look at the existing stories in [data/mysteries](https://github.com/patrickmziet/sherlock/tree/main/data/mysteries).
 
