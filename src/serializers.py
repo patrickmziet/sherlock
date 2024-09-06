@@ -60,7 +60,6 @@ class LLMAPISerializer:
         return {
             "id": message.id,
             "content": [LLMAPISerializer.serialize_text_block(block) for block in message.content],
-            # "top_logprobs": message.top_logprobs,
             "top_logprobs": message.top_logprobs if message.top_logprobs is not None else None,
             "model": message.model,
             "role": message.role,
@@ -83,10 +82,16 @@ class LLMAPISerializer:
 
     @staticmethod
     def from_claude_response(response: Any) -> UnifiedMessage:
+        content = []
+        if response.content:
+            content = [TextBlock(text=block.text, type=block.type)
+                       for block in response.content]
+        else:
+            # If content is empty, add a single TextBlock with an empty string
+            content = [TextBlock(text="", type="text")]
         return UnifiedMessage(
             id=response.id,
-            content=[TextBlock(text=block.text, type=block.type)
-                     for block in response.content],
+            content=content,
             top_logprobs=None,  # Claude doesn't provide top logprobs
             model=response.model,
             role=response.role,
