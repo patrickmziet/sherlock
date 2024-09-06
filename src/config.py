@@ -9,11 +9,13 @@ MYS_DIR = os.path.join(DATA_DIR, 'mysteries')
 EVAL_DIR = os.path.join(DATA_DIR, 'evaluations')
 VIS_DIR = os.path.join(DATA_DIR, 'visualizations')
 
+DIF_LEVELS = ['easy', 'medium', 'hard']
 
 MAX_CHOICES = 20
 LETTERS = list(string.ascii_uppercase[:MAX_CHOICES])
 CHOICES = [f"({c})" for c in LETTERS]
-POSSIBLE_RESPONSES = list(chain(*[[f"({A}", f"{A})", f"({A})"] for A in LETTERS]))
+POSSIBLE_RESPONSES = list(
+    chain(*[[f"({A}", f"{A})", f"({A})"] for A in LETTERS]))
 
 EXAMPLE = """
 I am going to give you a  mystery to solve, you must read the mystery and then identify the culprit from a list of suspects. Here is an example mystery:
@@ -44,4 +46,3 @@ Which of the following suspects is the culprit:
 {answer} 
 """
 NUM_CHUNKS = 10
-
