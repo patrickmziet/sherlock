@@ -2,15 +2,19 @@ import os
 import string
 from itertools import chain
 
+# Directory paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 MYS_DIR = os.path.join(DATA_DIR, 'mysteries')
 EVAL_DIR = os.path.join(DATA_DIR, 'evaluations')
 VIS_DIR = os.path.join(DATA_DIR, 'visualizations')
 
+# Categories for difficulty levels
 DIF_LEVELS = ['easy', 'medium', 'hard']
+COLORS = ['#009E73', '#0072B2', '#D55E00'] # See https://davidmathlogic.com/colorblind/#%23000000-%23E69F00-%2356B4E9-%23009E73-%23F0E442-%230072B2-%23D55E00-%23CC79A7
+DIF_COLORS = dict(zip(DIF_LEVELS, COLORS))
 
+# Constants for mystery generation
 MAX_CHOICES = 20
 LETTERS = list(string.ascii_uppercase[:MAX_CHOICES])
 CHOICES = [f"({c})" for c in LETTERS]
