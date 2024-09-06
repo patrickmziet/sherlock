@@ -65,6 +65,8 @@ def plot_topprobs(completions, data, model_name, force_rerun=False):
         probs = dict(
             sorted(probs.items(), key=lambda item: item[1], reverse=True))
         total = sum(probs.values())
+        if total == 0:
+            total = 1  # Avoid division by zero
         sus = {letters[i]: suspect for i, suspect in enumerate(suspects)}
         normalized_probs = {sus[k]: v / total for k, v in probs.items()}
 
