@@ -4,6 +4,12 @@ Inspired by an [episode of the Dwarkesh Podcast](https://x.com/dwarkesh_sp/statu
 
 ![Model Performance](data/visualizations/model_performance.png)
 
+
+|        |   Random |   gpt-4o-2024-05-13 |   claude-3-5-sonnet-20240620 |   gpt-4o-mini-2024-07-18 |   gpt-4-turbo-2024-04-09 |   gpt-4-0613 |   claude-3-opus-20240229 |   claude-3-sonnet-20240229 |   claude-3-haiku-20240307 |
+|:-------|---------:|--------------------:|-----------------------------:|-------------------------:|-------------------------:|-------------:|-------------------------:|---------------------------:|--------------------------:|
+| easy   |     30.6 |                66.7 |                         33.3 |                      0.0 |                     33.3 |         33.3 |                     33.3 |                       66.7 |                       0.0 |
+| medium |     13.7 |                 0.0 |                         66.7 |                      0.0 |                     33.3 |         33.3 |                     33.3 |                        0.0 |                       0.0 |
+| hard   |      8.6 |                 0.0 |                         66.7 |                      0.0 |                     33.3 |          0.0 |                     33.3 |                        0.0 |                       0.0 |
 ## Contributing a mystery
 
 The aim is to have mysteries contributed from other people, please fork the repo, make a new story and submit it as a PR. 
