@@ -4,8 +4,8 @@ from openai import OpenAI
 from anthropic import Anthropic
 
 API_TYPES = {
-    "openai": ["gpt-4o-2024-05-13", "gpt-4o-mini-2024-07-18"],
-    "claude": ["claude-3-5-sonnet-20240620"],
+    "openai": ["gpt-4o-2024-05-13", "gpt-4o-mini-2024-07-18", "gpt-4-turbo-2024-04-09", "gpt-4-0613"],
+    "claude": ["claude-3-5-sonnet-20240620", "claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"],
 }
 
 
@@ -35,7 +35,6 @@ class GPT4o240513(Model):
     def __init__(self):
         super().__init__("gpt-4o-2024-05-13")
         self.client = OpenAI()
-        print(f"Established connection with {self.model_name}")
 
     def make_call(self, prompt, **kwargs):
         response = self.client.chat.completions.create(
@@ -56,7 +55,46 @@ class GPT4oMini240718(Model):
     def __init__(self):
         super().__init__("gpt-4o-mini-2024-07-18")
         self.client = OpenAI()
-        print(f"Established connection with {self.model_name}")
+
+    def make_call(self, prompt, **kwargs):
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            logprobs=True,
+            top_logprobs=20,
+            max_tokens=1,
+            temperature=0,
+            **kwargs
+        )
+        return response
+
+
+class GPT4oTurbo240409(Model):
+    def __init__(self):
+        super().__init__("gpt-4-turbo-2024-04-09")
+        self.client = OpenAI()
+
+    def make_call(self, prompt, **kwargs):
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            logprobs=True,
+            top_logprobs=20,
+            max_tokens=1,
+            temperature=0,
+            **kwargs
+        )
+        return response
+
+
+class GPT40613(Model):
+    def __init__(self):
+        super().__init__("gpt-4-0613")
+        self.client = OpenAI()
 
     def make_call(self, prompt, **kwargs):
         response = self.client.chat.completions.create(
@@ -77,11 +115,67 @@ class Claude35Sonnet240620(Model):
     def __init__(self):
         super().__init__("claude-3-5-sonnet-20240620")
         self.client = Anthropic()
-        print(f"Established connection with {self.model_name}")
 
     def make_call(self, prompt, **kwargs):
         response = self.client.messages.create(
-            model="claude-3-5-sonnet-20240620",
+            model=self.model_name,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1,
+            temperature=0,
+            **kwargs
+        )
+
+        return response
+
+
+class Claude3Opus240229(Model):
+    def __init__(self):
+        super().__init__("claude-3-opus-20240229")
+        self.client = Anthropic()
+
+    def make_call(self, prompt, **kwargs):
+        response = self.client.messages.create(
+            model=self.model_name,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1,
+            temperature=0,
+            **kwargs
+        )
+
+        return response
+
+
+class Claude3Sonnet240229(Model):
+    def __init__(self):
+        super().__init__("claude-3-sonnet-20240229")
+        self.client = Anthropic()
+
+    def make_call(self, prompt, **kwargs):
+        response = self.client.messages.create(
+            model=self.model_name,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=1,
+            temperature=0,
+            **kwargs
+        )
+
+        return response
+
+
+class Claude3Haiku240307(Model):
+    def __init__(self):
+        super().__init__("claude-3-haiku-20240307")
+        self.client = Anthropic()
+
+    def make_call(self, prompt, **kwargs):
+        response = self.client.messages.create(
+            model=self.model_name,
             messages=[
                 {"role": "user", "content": prompt}
             ],
@@ -97,7 +191,12 @@ class ModelFactory:
     model_classes = {
         "gpt-4o-2024-05-13": GPT4o240513,
         "gpt-4o-mini-2024-07-18": GPT4oMini240718,
-        "claude-3-5-sonnet-20240620": Claude35Sonnet240620
+        "gpt-4-turbo-2024-04-09": GPT4oTurbo240409,
+        "gpt-4-0613": GPT40613,
+        "claude-3-5-sonnet-20240620": Claude35Sonnet240620,
+        "claude-3-opus-20240229": Claude3Opus240229,
+        "claude-3-sonnet-20240229": Claude3Sonnet240229,
+        "claude-3-haiku-20240307": Claude3Haiku240307,
     }
 
     @staticmethod
