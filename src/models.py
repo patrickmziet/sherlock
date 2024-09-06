@@ -4,7 +4,7 @@ from openai import OpenAI
 from anthropic import Anthropic
 
 API_TYPES = {
-    "openai": ["gpt-4o-2024-05-13"],
+    "openai": ["gpt-4o-2024-05-13", "gpt-4o-mini-2024-07-18"],
     "claude": ["claude-3-5-sonnet-20240620"],
 }
 
@@ -52,6 +52,27 @@ class GPT4o240513(Model):
         return response
 
 
+class GPT4oMini240718(Model):
+    def __init__(self):
+        super().__init__("gpt-4o-mini-2024-07-18")
+        self.client = OpenAI()
+        print(f"Established connection with {self.model_name}")
+
+    def make_call(self, prompt, **kwargs):
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            logprobs=True,
+            top_logprobs=20,
+            max_tokens=1,
+            temperature=0,
+            **kwargs
+        )
+        return response
+
+
 class Claude35Sonnet240620(Model):
     def __init__(self):
         super().__init__("claude-3-5-sonnet-20240620")
@@ -75,6 +96,7 @@ class Claude35Sonnet240620(Model):
 class ModelFactory:
     model_classes = {
         "gpt-4o-2024-05-13": GPT4o240513,
+        "gpt-4o-mini-2024-07-18": GPT4oMini240718,
         "claude-3-5-sonnet-20240620": Claude35Sonnet240620
     }
 
