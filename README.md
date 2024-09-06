@@ -8,6 +8,9 @@ The aim is to have mysteries contributed from other people, please fork the repo
 
 Follow the instructions in the [make_story.ipynb](https://github.com/patrickmziet/sherlock/blob/main/make_story.ipynb) notebook. 
 
+![Model Performance](data/visualizations/model_performance.png)
+
+
 Have a look at the existing stories in [data/mysteries](https://github.com/patrickmziet/sherlock/tree/main/data/mysteries).
 
 ## TODO
@@ -18,8 +21,8 @@ Have a look at the existing stories in [data/mysteries](https://github.com/patri
 - [X] Write serializers
 - [X] Fix stream animation if there are no logprobs, and add green box to other plot ylabel.
 - [ ] Add other plot/table functions: 
--- Performance (%) vs model bar plots, 
--- add random classifier (to all tables as well) 
+-- Performance (%) vs model bar plots, (tick) 
+-- add random classifier (to all tables as well)  
 -- function to print TeX table, calibration plot, 
 -- "Stream score" where early correct guesses are rewarded more (first prompt claude to see if anything similar exists). But must also punish if it veers off later on. It could be right in the middle of the story but then fail at a later stage. 
 - [ ] Improve API request answer format. Give an example. Add option to "Think step by step..."
