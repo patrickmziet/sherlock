@@ -194,15 +194,21 @@ def make_confusion():
 def to_TeX(df):
     """
     Converts a DataFrame to a LaTeX table.
+    Multiplies values by 100 and rounds to 1 decimal place.
     """
-    return df.to_latex(float_format="%.3f", index=True, escape=False)
+    df_percent = (df * 100).round(1)
+    return df_percent.to_latex(float_format="%.1f", index=True, escape=False)
+
 
 def to_md(df):
     """
     Converts a DataFrame to a Markdown table.
+    Multiplies values by 100 and rounds to 1 decimal place.
     """
-    return df.to_markdown(floatfmt=".3f", index=True)
-    
+    df_percent = (df * 100).round(1)
+    return df_percent.to_markdown(floatfmt=".1f", index=True)
+
+
 def plot_perf(df):
     """
     Plots grouped bar plots of accuracy by model for each difficulty level.
@@ -234,9 +240,9 @@ def plot_perf(df):
 
         ax.axhline(y=df["Random"][difficulty] * 100,
                    color='red', linestyle='--', alpha=0.7)
-    
+
     # Add the random performance line to the plot (for legend purposes)
-    ax.plot([], [], color='red', linestyle='--', label='Random performance')
+    ax.plot([], [], color='red', linestyle='--', label='Random baseline')
 
     # Customize the plot
     ax.set_ylabel('Accuracy (%)')
