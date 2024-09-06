@@ -7,7 +7,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-from src.config import VIS_DIR, EVAL_DIR, DIF_LEVELS
+from src.config import VIS_DIR, EVAL_DIR, DIF_LEVELS, DIF_COLORS
 from src.data import combine_prob_entries, token_to_suspect
 
 
@@ -156,7 +156,7 @@ def make_confusion():
     results = defaultdict(lambda: defaultdict(int))
     difficulty_results = defaultdict(lambda: defaultdict(list))
     model_names = set()
-
+    model_names.add('Random')
     for difficulty in DIF_LEVELS:
         difficulty_path = os.path.join(EVAL_DIR, difficulty)
         if os.path.isdir(difficulty_path):
@@ -168,6 +168,9 @@ def make_confusion():
                     story_name = filename.replace('.pickle', '')
                     culprit = data['data']['culprit']
                     suspects = data['data']['suspects']
+                    rand_clas = 1 / len(suspects)
+                    results[story_name]['Random'] = rand_clas
+                    difficulty_results[difficulty]['Random'].append(rand_clas)
                     for model, completions in data['completions'].items():
                         model_names.add(model)
                         selected_suspect = token_to_suspect(
@@ -175,7 +178,7 @@ def make_confusion():
                         correct = int(selected_suspect == culprit)
                         results[story_name][model] = correct
                         difficulty_results[difficulty][model].append(correct)
-
+    print(f"Model names: {model_names}")
     # Create detailed DataFrame
     df_detailed = pd.DataFrame(results).T.fillna(0)
     # Create difficulty-based DataFrame
@@ -188,5 +191,71 @@ def make_confusion():
     return df_detailed, df_difficulty
 
 
-def plot_perf():
-    pass
+def to_TeX(df):
+    """
+    Converts a DataFrame to a LaTeX table.
+    """
+    return df.to_latex(float_format="%.3f", index=True, escape=False)
+
+def to_md(df):
+    """
+    Converts a DataFrame to a Markdown table.
+    """
+    return df.to_markdown(floatfmt=".3f", index=True)
+    
+def plot_perf(df):
+    """
+    Plots grouped bar plots of accuracy by model for each difficulty level.
+
+    Args:
+    df (pd.DataFrame): DataFrame with models as columns and difficulties as rows.
+
+    Returns:
+    None (displays the plot)
+    """
+    # Set up the plot
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    # Define width of each bar and positions of the bars
+    bar_width = 0.25
+
+    # Get the model names and number of models
+    models = df.columns
+    n_models = len(models)
+
+    # Create x-positions for the bars
+    indices = np.arange(n_models)
+
+    # Plot bars for each difficulty
+    for i, difficulty in enumerate(DIF_LEVELS):
+        values = df.loc[difficulty] * 100  # Convert to percentage
+        ax.bar(indices + i*bar_width, values, bar_width,
+               label=difficulty.capitalize(), color=DIF_COLORS.get(difficulty))
+
+        ax.axhline(y=df["Random"][difficulty] * 100,
+                   color='red', linestyle='--', alpha=0.7)
+    
+    # Add the random performance line to the plot (for legend purposes)
+    ax.plot([], [], color='red', linestyle='--', label='Random performance')
+
+    # Customize the plot
+    ax.set_ylabel('Accuracy (%)')
+    ax.set_xlabel('Model')
+    ax.set_title('Model Performance by Difficulty Level')
+    ax.set_xticks(indices + bar_width)
+    ax.set_xticklabels(models, rotation=22.5, ha='right')
+    ax.legend(loc='upper right')
+
+    # Set y-axis to show full range from 0 to 100%
+    ax.set_ylim(0, 100)
+
+    # Add gridlines for better readability
+    ax.grid(axis='y', linestyle='--', alpha=0.9)
+
+    # Adjust layout and display the plot
+    plt.tight_layout()
+    fn = os.path.join(VIS_DIR, "model_performance.png")
+    plt.savefig(fn)
+    plt.close(fig)  # Close the figure to free up memory
+    print(f"Plot saved as '{fn}'")
+    # plt.show()
