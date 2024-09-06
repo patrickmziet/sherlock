@@ -2,7 +2,7 @@ import json
 from typing import List
 import os
 
-from src.config import MYS_DIR
+from src.config import MYS_DIR, DIF_LEVELS
 
 
 def create_mystery_json(
@@ -29,7 +29,7 @@ def create_mystery_json(
         raise TypeError("Reveal index must be an integer")
 
     # Check difficulty is either 'easy', 'medium', or 'hard'
-    if difficulty not in ['easy', 'medium', 'hard']:
+    if difficulty not in DIF_LEVELS:
         raise ValueError(
             "Difficulty must be either 'easy', 'medium', or 'hard'")
 

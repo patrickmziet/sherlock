@@ -7,7 +7,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-from src.config import VIS_DIR, EVAL_DIR, LETTERS, POSSIBLE_RESPONSES
+from src.config import VIS_DIR, EVAL_DIR, DIF_LEVELS
 from src.data import combine_prob_entries, token_to_suspect
 
 
@@ -16,8 +16,10 @@ def highlight_culprit(ax, suspects, culprit):
     ylabels = ax.get_yticklabels()
     for i, label in enumerate(ylabels):
         if i == culprit_index:
-            label.set_bbox(dict(facecolor='lightgreen', edgecolor='none', alpha=0.5))
-            
+            label.set_bbox(dict(facecolor='lightgreen',
+                           edgecolor='none', alpha=0.5))
+
+
 def make_viz_dir(data):
     tl = data["title"].lower().replace(" ", "_")
     dif = data["difficulty"]
@@ -51,7 +53,7 @@ def plot_topprobs(completions, data, model_name, force_rerun=False):
         ax.clear()
         completion = completions[j]
         top_logprobs_dict = completion.get('top_logprobs', {})
-        
+
         if not top_logprobs_dict:
             return  # Skip this frame if top_logprobs is empty
 
@@ -87,7 +89,7 @@ def plot_topprobs(completions, data, model_name, force_rerun=False):
 
     anim = animation.FuncAnimation(fig, animate, frames=len(
         completions), repeat=False, interval=1000)
-    
+
     anim.save(filename, writer='ffmpeg', fps=1)
     plt.close(fig)  # Close the figure to free up memory
     print(f"Plot saved as '{filename}'")
@@ -153,7 +155,7 @@ def make_confusion():
     difficulty_results = defaultdict(lambda: defaultdict(list))
     model_names = set()
 
-    for difficulty in os.listdir(EVAL_DIR):
+    for difficulty in DIF_LEVELS:
         difficulty_path = os.path.join(EVAL_DIR, difficulty)
         if os.path.isdir(difficulty_path):
             for filename in os.listdir(difficulty_path):
@@ -166,7 +168,8 @@ def make_confusion():
                     suspects = data['data']['suspects']
                     for model, completions in data['completions'].items():
                         model_names.add(model)
-                        selected_suspect = token_to_suspect(completions[-1], suspects)
+                        selected_suspect = token_to_suspect(
+                            completions[-1], suspects)
                         correct = int(selected_suspect == culprit)
                         results[story_name][model] = correct
                         difficulty_results[difficulty][model].append(correct)
@@ -176,11 +179,11 @@ def make_confusion():
     # Create difficulty-based DataFrame
     df_difficulty = {}
     for diff, model_results in difficulty_results.items():
-        df_difficulty[diff] = {model: sum(results)/len(results) for model, results in model_results.items()}
+        df_difficulty[diff] = {model: sum(
+            results)/len(results) for model, results in model_results.items()}
     df_difficulty = pd.DataFrame(df_difficulty).T.fillna(0)
 
     return df_detailed, df_difficulty
-
 
 
 def plot_perf():
