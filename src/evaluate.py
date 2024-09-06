@@ -47,7 +47,6 @@ def eval() -> None:
         for mys in os.listdir(f'{MYS_DIR}/{dif}'):
             print(f"Evaluating mystery: {mys}:")
             if mys.endswith('.json'):
-                print(f"--Generating prompts")
                 data = load_json(f'{MYS_DIR}/{dif}/{mys}')
                 mystery = data["mystery"]
                 reveal_index = data["reveal_index"]
