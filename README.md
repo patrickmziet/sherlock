@@ -6,6 +6,8 @@ Eval that tests LLMs ability to determine the culprit in "Sherlock Holmes"-like 
 
 ![Model Performance](data/visualizations/model_performance.png)
 
+
+
 |                            |   easy |   medium |   hard |   Average |
 |:---------------------------|-------:|---------:|-------:|----------:|
 | claude-3-5-sonnet-20240620 |   33.3 |     66.7 |   66.7 |      55.6 |
