@@ -51,7 +51,7 @@ The mysteries have many suspects, and one culprit. Difficulty is determined by m
 
 > He turned suddenly, fixing his gaze on one individual. "<mark>The culprit is none other than</mark> Maurice Devereaux!"
 
-And only *after* this reveal does Sherlock give us his reasoning. So the LLM does not see a lead up to a reveal. 
+And only *after* this reveal does Sherlock give us his reasoning. So the LLM does not see the lead up to a reveal. 
 
 > The artistic director's face drained of color. "This... this is preposterous! I loved Adeline!"
 > "Indeed you did," Holmes said gravely. "Your love, however, was not reciprocated. You were the phantom, Monsieur Devereaux, but not of this opera – of Adeline's past."
