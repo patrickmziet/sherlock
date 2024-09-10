@@ -6,7 +6,7 @@ Eval that tests LLMs ability to determine the culprit in "Sherlock Holmes"-like 
 
 ![Model Performance](data/visualizations/model_performance.png)
 
-
+..
 
 |                            |   easy |   medium |   hard |   Average |
 |:---------------------------|-------:|---------:|-------:|----------:|
