@@ -9,6 +9,8 @@ The dotted red lines show the performance of choosing a suspect at random for `e
 
 `claude-3-5-sonnet-20240620` is the overall leader. Mysteries are classified as either `easy`, `medium` or `hard`, see the [make_story.ipynb](https://github.com/patrickmziet/sherlock/blob/main/make_story.ipynb) notebook for more detail.
 
+At the moment, a lot of models fail to even output an acceptable answer, resulting in 0%, see `claude-3-haiku-20240307`. This is a problem that possibly requires better prompting.
+
 |                            |   easy |   medium |   hard |   Average |
 |:---------------------------|-------:|---------:|-------:|----------:|
 | claude-3-5-sonnet-20240620 |   33.3 |     66.7 |   66.7 |      55.6 |
@@ -20,8 +22,6 @@ The dotted red lines show the performance of choosing a suspect at random for `e
 | Random                     |   30.6 |     13.7 |    8.6 |      17.6 |
 | gpt-4o-mini-2024-07-18     |    0.0 |      0.0 |    0.0 |       0.0 |
 | claude-3-haiku-20240307    |    0.0 |      0.0 |    0.0 |       0.0 |
-
-At the moment, a lot of models fail to even output an acceptable answer, resulting in 0%, see `claude-3-haiku-20240307`. This is a problem that possibly requires better prompting.
 
 ## The mysteries
 
