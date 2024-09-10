@@ -31,10 +31,7 @@ It is crucial to ask how useful this eval is. First, we note that murder mysteri
 
 > When you drop a ball from rest it accelerates downward at 9.8 m/s². If you instead throw it downward assuming no air resistance its acceleration immediately after leaving your hand is
 > 
-> (A) 9.8 m/s²
-> (B) more than 9.8 m/s²
-> (C) less than 9.8 m/s²
-> (D) Cannot say unless the speed of throw is given
+> (A) 9.8 m/s²                                                                         (B) more than 9.8 m/s²                                                                 (C) less than 9.8 m/s²                                                                 (D) Cannot say unless the speed of throw is given
 
 At its best, so what does it mean for an LLM to do well on this eval? What is it doing?
 - Synthesising a whole bunch of information. Being able to ignore red herrings, and pick up on subtle details.
