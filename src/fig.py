@@ -191,6 +191,16 @@ def make_confusion():
     return df_detailed, df_difficulty
 
 
+def leader(df, sort_by='Average'):
+    df_transposed = df.T
+    df_transposed['Average'] = df_transposed.mean(axis=1)
+    if sort_by not in df_transposed.columns:
+        raise ValueError(f"Column '{sort_by}' not found in the DataFrame. Available columns are: {', '.join(df_transposed.columns)}")
+    df_transposed = df_transposed.sort_values(sort_by, ascending=False)
+
+    return df_transposed
+
+
 def to_TeX(df):
     """
     Converts a DataFrame to a LaTeX table.
@@ -261,7 +271,8 @@ def plot_perf(df):
     # Adjust layout and display the plot
     plt.tight_layout()
     fn = os.path.join(VIS_DIR, "model_performance.png")
+    plt.show()
     plt.savefig(fn)
     plt.close(fig)  # Close the figure to free up memory
     print(f"Plot saved as '{fn}'")
-    # plt.show()
+    
