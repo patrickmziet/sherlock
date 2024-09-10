@@ -3,10 +3,11 @@
 Eval that tests LLMs ability to determine the culprit in "Sherlock Holmes"-like murder mysteries, inspired by an [episode of the Dwarkesh Podcast](https://x.com/dwarkesh_sp/status/1825931761118794102).
 
 ## Leaderboard
+The dotted red lines show the performance of choosing a suspect at random for `easy`, `medium` and `hard`. For example `gpt-4o-2024-05-13` performs much better than random for `easy` mysteries, 66.7% vs 30.6%.
 
 ![Model Performance](data/visualizations/model_performance.png)
 
-<span style="color: white;">Need this here for image above to render, don't know why</span>
+`claude-3-5-sonnet-20240620` is the overall leader. Mysteries are classified as either `easy`, `medium` or `hard`, see the [make_story.ipynb](https://github.com/patrickmziet/sherlock/blob/main/make_story.ipynb) notebook for more detail.
 
 |                            |   easy |   medium |   hard |   Average |
 |:---------------------------|-------:|---------:|-------:|----------:|
@@ -19,10 +20,6 @@ Eval that tests LLMs ability to determine the culprit in "Sherlock Holmes"-like 
 | Random                     |   30.6 |     13.7 |    8.6 |      17.6 |
 | gpt-4o-mini-2024-07-18     |    0.0 |      0.0 |    0.0 |       0.0 |
 | claude-3-haiku-20240307    |    0.0 |      0.0 |    0.0 |       0.0 |
-
-`claude-3-5-sonnet-20240620` is the overall leader. Mysteries are classified as either `easy`, `medium` or `hard`, see the [make_story.ipynb](https://github.com/patrickmziet/sherlock/blob/main/make_story.ipynb) notebook for more detail. 
-
-The dotted red lines show the performance of choosing a suspect at random for `easy`, `medium` and `hard`. For example `gpt-4o-2024-05-13` performs much better than random for `easy` mysteries, 66.7% vs 30.6%.
 
 At the moment, a lot of models fail to even output an acceptable answer, resulting in 0%, see `claude-3-haiku-20240307`. This is a problem that possibly requires better prompting.
 
