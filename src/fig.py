@@ -231,17 +231,13 @@ def plot_perf(df):
     """
     # Set up the plot
     fig, ax = plt.subplots(figsize=(12, 6))
-
     # Define width of each bar and positions of the bars
     bar_width = 0.25
-
     # Get the model names and number of models
     models = df.columns
     n_models = len(models)
-
     # Create x-positions for the bars
     indices = np.arange(n_models)
-
     # Plot bars for each difficulty
     for i, difficulty in enumerate(DIF_LEVELS):
         values = df.loc[difficulty] * 100  # Convert to percentage
@@ -271,7 +267,7 @@ def plot_perf(df):
     # Adjust layout and display the plot
     plt.tight_layout()
     fn = os.path.join(VIS_DIR, "model_performance.png")
-    plt.show()
+    # plt.show()
     plt.savefig(fn)
     plt.close(fig)  # Close the figure to free up memory
     print(f"Plot saved as '{fn}'")
