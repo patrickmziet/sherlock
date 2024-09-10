@@ -30,6 +30,7 @@ At the moment, a lot of models fail to even output an acceptable answer, resulti
 It is crucial to ask how useful this eval is. First, we note that murder mysteries are ambiguous, subjective, indeterminate, fuzzy, and open-ended. Sherlock could just as well accuse other suspects with plausible explanations. In contrast to the [MMLU benchmark](https://arxiv.org/pdf/2009.03300) which asks objective, well-defined questions like:
 
 > When you drop a ball from rest it accelerates downward at 9.8 m/s². If you instead throw it downward assuming no air resistance its acceleration immediately after leaving your hand is
+> 
 > (A) 9.8 m/s²
 > (B) more than 9.8 m/s²
 > (C) less than 9.8 m/s²
