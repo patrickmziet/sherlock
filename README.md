@@ -3,7 +3,7 @@
 Eval that tests LLMs ability to determine the culprit in "Sherlock Holmes"-like murder mysteries, inspired by an [episode of the Dwarkesh Podcast](https://x.com/dwarkesh_sp/status/1825931761118794102).
 
 ## Leaderboard
-The dotted red lines show the performance of choosing a suspect at random for `easy`, `medium` and `hard`. For example `gpt-4o-2024-05-13` performs much better than random for `easy` mysteries, 66.7% vs 30.6%.
+The dotted red lines show the performance of choosing a suspect at random for `easy`, `medium` and `hard`. For example `gpt-4o-2024-05-13` performs much better than random for `easy` mysteries, 100% vs 30.6%.
 
 ![Model Performance](data/visualizations/model_performance.png)
 
@@ -13,16 +13,15 @@ At the moment, a lot of models fail to even output an acceptable answer, resulti
 
 |                            |   easy |   medium |   hard |   Average |
 |:---------------------------|-------:|---------:|-------:|----------:|
-| claude-3-5-sonnet-20240620 |   33.3 |     66.7 |   66.7 |      55.6 |
-| claude-3-opus-20240229     |   33.3 |     33.3 |   33.3 |      33.3 |
+| claude-3-5-sonnet-20240620 |   66.7 |    100.0 |   66.7 |      77.8 |
+| claude-3-opus-20240229     |   66.7 |     66.7 |   33.3 |      55.6 |
+| gpt-4o-2024-05-13          |  100.0 |     33.3 |   33.3 |      55.6 |
+| claude-3-sonnet-20240229   |   33.3 |     33.3 |   33.3 |      33.3 |
 | gpt-4-turbo-2024-04-09     |   33.3 |     33.3 |   33.3 |      33.3 |
-| claude-3-sonnet-20240229   |   66.7 |      0.0 |    0.0 |      22.2 |
-| gpt-4o-2024-05-13          |   66.7 |      0.0 |    0.0 |      22.2 |
-| gpt-4-0613                 |   33.3 |     33.3 |    0.0 |      22.2 |
+| gpt-4-0613                 |   33.3 |     33.3 |   33.3 |      33.3 |
 | Random                     |   30.6 |     13.7 |    8.6 |      17.6 |
-| gpt-4o-mini-2024-07-18     |    0.0 |      0.0 |    0.0 |       0.0 |
+| gpt-4o-mini-2024-07-18     |   33.3 |      0.0 |    0.0 |      11.1 |
 | claude-3-haiku-20240307    |    0.0 |      0.0 |    0.0 |       0.0 |
-
 ## The mysteries
 
 ### Usefulness of eval
